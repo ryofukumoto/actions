@@ -1,0 +1,36 @@
+name: test test test
+
+on:
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'タイプ'
+        required: true
+        type: choice
+        options:
+          - patch
+          - minor
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Set user
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+      
+      - name: Get current version
+        id: get_version
+        run: |
+          current_version=$(jq -r .version package.json)
+          echo "Current version: $current_version"
+          echo "::set-output name=current_version::$current_version"
